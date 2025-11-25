@@ -7,61 +7,186 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Task Manager</h1>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="logo">Task Manager</h1>
+      </div>
+      <div class="header-center">
+        <!-- Search area (for future feature/search) -->
+        <div class="search-area" id="searchArea">
+          <!-- Search input will be added here -->
+        </div>
+      </div>
+      <div class="header-right">
+        <!-- Theme toggle (for future feature/dark-mode) -->
+        <div class="theme-toggle" id="themeToggle">
+          <!-- Theme toggle button will be added here -->
+        </div>
+        <!-- User area (for future feature/user-auth) -->
+        <div class="user-area" id="userArea">
+          <!-- Login button or user info will be added here -->
+        </div>
+      </div>
     </header>
 
-    <main>
-      <!-- Task Creation Form -->
-      <section class="task-form">
-        <h2>New Task</h2>
-        <form id="createTaskForm">
-          <div class="form-group">
-            <label for="title">Title *</label>
-            <input type="text" id="title" name="title" maxlength="100" required>
+    <!-- Main Layout -->
+    <div class="main-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+          <!-- Filter section (for future feature/categories) -->
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">Filters</h3>
+            <ul class="filter-list" id="filterList">
+              <li class="filter-item active" data-filter="all">
+                <span class="filter-icon">📋</span>
+                <span class="filter-name">All Tasks</span>
+                <span class="filter-count" id="countAll">0</span>
+              </li>
+              <li class="filter-item" data-filter="pending">
+                <span class="filter-icon">⏳</span>
+                <span class="filter-name">Pending</span>
+                <span class="filter-count" id="countPending">0</span>
+              </li>
+              <li class="filter-item" data-filter="in_progress">
+                <span class="filter-icon">🔄</span>
+                <span class="filter-name">In Progress</span>
+                <span class="filter-count" id="countInProgress">0</span>
+              </li>
+              <li class="filter-item" data-filter="completed">
+                <span class="filter-icon">✅</span>
+                <span class="filter-name">Completed</span>
+                <span class="filter-count" id="countCompleted">0</span>
+              </li>
+            </ul>
           </div>
-          <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" maxlength="500"></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">Add Task</button>
-        </form>
-      </section>
 
-      <!-- Task List -->
-      <section class="task-list">
-        <h2>Tasks</h2>
-        <div id="tasks"></div>
-      </section>
-    </main>
+          <!-- Categories section (for future feature/categories) -->
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">Categories</h3>
+            <ul class="category-list" id="categoryList">
+              <!-- Categories will be added here -->
+              <li class="category-item empty-state">No categories yet</li>
+            </ul>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Task Creation Form -->
+        <section class="task-form-section">
+          <div class="section-header">
+            <h2>New Task</h2>
+          </div>
+          <form id="createTaskForm" class="task-form">
+            <div class="form-row">
+              <div class="form-group form-group-title">
+                <label for="title">Title <span class="required">*</span></label>
+                <input type="text" id="title" name="title" maxlength="100" placeholder="Enter task title..." required>
+              </div>
+              <div class="form-group form-group-deadline">
+                <!-- Deadline input (for future feature/deadline) -->
+                <label for="deadline">Deadline</label>
+                <input type="date" id="deadline" name="deadline" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea id="description" name="description" maxlength="500" placeholder="Enter task description..."></textarea>
+            </div>
+            <div class="form-row form-actions">
+              <div class="form-group form-group-category">
+                <!-- Category select (for future feature/categories) -->
+                <label for="category">Category</label>
+                <select id="category" name="category" disabled>
+                  <option value="">No category</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <span class="btn-icon">+</span>
+                <span class="btn-text">Add Task</span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Task List -->
+        <section class="task-list-section">
+          <div class="section-header">
+            <h2>Tasks</h2>
+            <div class="section-actions">
+              <!-- Sort options (for future feature/deadline) -->
+              <div class="sort-options" id="sortOptions">
+                <label for="sortBy">Sort by:</label>
+                <select id="sortBy" disabled>
+                  <option value="createdAt">Created Date</option>
+                  <option value="deadline">Deadline</option>
+                  <option value="status">Status</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="task-list" id="tasks">
+            <!-- Tasks will be rendered here -->
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Task Manager - Git Worktree Practice Project</p>
+    </footer>
   </div>
 
   <!-- Edit Modal -->
   <div id="editModal" class="modal">
+    <div class="modal-overlay" onclick="closeModal()"></div>
     <div class="modal-content">
-      <h2>Edit Task</h2>
+      <div class="modal-header">
+        <h2>Edit Task</h2>
+        <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
       <form id="editTaskForm">
         <input type="hidden" id="editId">
-        <div class="form-group">
-          <label for="editTitle">Title *</label>
-          <input type="text" id="editTitle" maxlength="100" required>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="editTitle">Title <span class="required">*</span></label>
+            <input type="text" id="editTitle" maxlength="100" required>
+          </div>
+          <div class="form-group">
+            <label for="editDescription">Description</label>
+            <textarea id="editDescription" maxlength="500"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editStatus">Status</label>
+              <select id="editStatus">
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <!-- Deadline edit (for future feature/deadline) -->
+              <label for="editDeadline">Deadline</label>
+              <input type="date" id="editDeadline" disabled>
+            </div>
+          </div>
+          <div class="form-group">
+            <!-- Category edit (for future feature/categories) -->
+            <label for="editCategory">Category</label>
+            <select id="editCategory" disabled>
+              <option value="">No category</option>
+            </select>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="editDescription">Description</label>
-          <textarea id="editDescription" maxlength="500"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="editStatus">Status</label>
-          <select id="editStatus">
-            <option value="pending">Pending</option>
-            <option value="in_progress">In Progress</option>
-            <option value="completed">Completed</option>
-          </select>
-        </div>
-        <div class="modal-buttons">
-          <button type="submit" class="btn btn-primary">Save</button>
+        <div class="modal-footer">
           <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
       </form>
     </div>
