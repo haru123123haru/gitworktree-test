@@ -2,11 +2,16 @@
 
 const API_URL = '/api/tasks';
 
+// State
+let allTasks = [];
+let currentFilter = 'all';
+
 // DOM Elements
 const tasksContainer = document.getElementById('tasks');
 const createTaskForm = document.getElementById('createTaskForm');
 const editModal = document.getElementById('editModal');
 const editTaskForm = document.getElementById('editTaskForm');
+const filterList = document.getElementById('filterList');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -18,6 +23,59 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupEventListeners() {
   createTaskForm.addEventListener('submit', handleCreateTask);
   editTaskForm.addEventListener('submit', handleEditTask);
+
+  // Filter click handlers
+  if (filterList) {
+    filterList.addEventListener('click', (e) => {
+      const filterItem = e.target.closest('.filter-item');
+      if (filterItem) {
+        const filter = filterItem.dataset.filter;
+        setFilter(filter);
+      }
+    });
+  }
+}
+
+// Set active filter
+function setFilter(filter) {
+  currentFilter = filter;
+
+  // Update active class
+  document.querySelectorAll('.filter-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.filter === filter);
+  });
+
+  // Re-render tasks with filter
+  renderTasks(getFilteredTasks());
+}
+
+// Get filtered tasks
+function getFilteredTasks() {
+  if (currentFilter === 'all') {
+    return allTasks;
+  }
+  return allTasks.filter(task => task.status === currentFilter);
+}
+
+// Update task counts in sidebar
+function updateTaskCounts() {
+  const counts = {
+    all: allTasks.length,
+    pending: allTasks.filter(t => t.status === 'pending').length,
+    in_progress: allTasks.filter(t => t.status === 'in_progress').length,
+    completed: allTasks.filter(t => t.status === 'completed').length
+  };
+
+  // Update count badges
+  const countAll = document.getElementById('countAll');
+  const countPending = document.getElementById('countPending');
+  const countInProgress = document.getElementById('countInProgress');
+  const countCompleted = document.getElementById('countCompleted');
+
+  if (countAll) countAll.textContent = counts.all;
+  if (countPending) countPending.textContent = counts.pending;
+  if (countInProgress) countInProgress.textContent = counts.in_progress;
+  if (countCompleted) countCompleted.textContent = counts.completed;
 }
 
 // Load all tasks
@@ -25,7 +83,9 @@ async function loadTasks() {
   try {
     const response = await fetch(API_URL);
     const tasks = await response.json();
-    renderTasks(tasks);
+    allTasks = tasks;
+    updateTaskCounts();
+    renderTasks(getFilteredTasks());
   } catch (error) {
     console.error('Failed to load tasks:', error);
     tasksContainer.innerHTML = '<p class="empty-state">Failed to load tasks</p>';
@@ -35,7 +95,10 @@ async function loadTasks() {
 // Render tasks
 function renderTasks(tasks) {
   if (tasks.length === 0) {
-    tasksContainer.innerHTML = '<p class="empty-state">No tasks yet. Create one!</p>';
+    const message = currentFilter === 'all'
+      ? 'No tasks yet. Create one!'
+      : `No ${formatStatus(currentFilter).toLowerCase()} tasks.`;
+    tasksContainer.innerHTML = `<p class="empty-state">${message}</p>`;
     return;
   }
 
@@ -46,7 +109,7 @@ function renderTasks(tasks) {
         ${task.description ? `<div class="task-description">${escapeHtml(task.description)}</div>` : ''}
         <div class="task-meta">
           <span class="task-status status-${task.status}">${formatStatus(task.status)}</span>
-          <span> | Created: ${formatDate(task.createdAt)}</span>
+          <span>Created: ${formatDate(task.createdAt)}</span>
         </div>
       </div>
       <div class="task-actions">
@@ -87,26 +150,19 @@ async function handleCreateTask(e) {
 
 // Open edit modal
 async function openEditModal(id) {
-  try {
-    const response = await fetch(API_URL);
-    const tasks = await response.json();
-    const task = tasks.find(t => t.id === id);
+  const task = allTasks.find(t => t.id === id);
 
-    if (!task) {
-      alert('Task not found');
-      return;
-    }
-
-    document.getElementById('editId').value = task.id;
-    document.getElementById('editTitle').value = task.title;
-    document.getElementById('editDescription').value = task.description;
-    document.getElementById('editStatus').value = task.status;
-
-    editModal.classList.add('active');
-  } catch (error) {
-    console.error('Failed to load task:', error);
-    alert('Failed to load task');
+  if (!task) {
+    alert('Task not found');
+    return;
   }
+
+  document.getElementById('editId').value = task.id;
+  document.getElementById('editTitle').value = task.title;
+  document.getElementById('editDescription').value = task.description;
+  document.getElementById('editStatus').value = task.status;
+
+  editModal.classList.add('active');
 }
 
 // Close modal
@@ -190,3 +246,10 @@ function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString('ja-JP');
 }
+
+// Close modal when clicking outside or pressing Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && editModal.classList.contains('active')) {
+    closeModal();
+  }
+});
