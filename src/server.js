@@ -24,12 +24,35 @@ function writeTasks(data) {
 // API: Get all tasks
 app.get('/api/tasks', (req, res) => {
   const data = readTasks();
-  res.json(data.tasks);
+  let tasks = data.tasks;
+
+  // deadline feature: Sort functionality
+  const { sort, order } = req.query;
+  if (sort) {
+    const sortOrder = order === 'desc' ? -1 : 1;
+    tasks = [...tasks].sort((a, b) => {
+      if (sort === 'deadline') {
+        // null deadlines go to the end
+        if (!a.deadline && !b.deadline) return 0;
+        if (!a.deadline) return 1;
+        if (!b.deadline) return -1;
+        return sortOrder * (new Date(a.deadline) - new Date(b.deadline));
+      } else if (sort === 'createdAt') {
+        return sortOrder * (new Date(a.createdAt) - new Date(b.createdAt));
+      } else if (sort === 'status') {
+        const statusOrder = { pending: 0, in_progress: 1, completed: 2 };
+        return sortOrder * (statusOrder[a.status] - statusOrder[b.status]);
+      }
+      return 0;
+    });
+  }
+
+  res.json(tasks);
 });
 
 // API: Create a new task
 app.post('/api/tasks', (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, deadline } = req.body;
 
   if (!title || title.trim() === '') {
     return res.status(400).json({ error: 'Title is required' });
@@ -43,13 +66,24 @@ app.post('/api/tasks', (req, res) => {
     return res.status(400).json({ error: 'Description must be 500 characters or less' });
   }
 
+  // deadline feature: Validate deadline
+  let parsedDeadline = null;
+  if (deadline) {
+    const deadlineDate = new Date(deadline);
+    if (isNaN(deadlineDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid deadline date' });
+    }
+    parsedDeadline = deadlineDate.toISOString();
+  }
+
   const data = readTasks();
   const newTask = {
     id: data.nextId,
     title: title.trim(),
     description: description ? description.trim() : '',
     status: 'pending',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    deadline: parsedDeadline
   };
 
   data.tasks.push(newTask);
@@ -62,7 +96,7 @@ app.post('/api/tasks', (req, res) => {
 // API: Update a task
 app.put('/api/tasks/:id', (req, res) => {
   const id = parseInt(req.params.id);
-  const { title, description, status } = req.body;
+  const { title, description, status, deadline } = req.body;
 
   const data = readTasks();
   const taskIndex = data.tasks.findIndex(t => t.id === id);
@@ -94,6 +128,19 @@ app.put('/api/tasks/:id', (req, res) => {
       return res.status(400).json({ error: 'Invalid status' });
     }
     data.tasks[taskIndex].status = status;
+  }
+
+  // deadline feature: Update deadline
+  if (deadline !== undefined) {
+    if (deadline === null || deadline === '') {
+      data.tasks[taskIndex].deadline = null;
+    } else {
+      const deadlineDate = new Date(deadline);
+      if (isNaN(deadlineDate.getTime())) {
+        return res.status(400).json({ error: 'Invalid deadline date' });
+      }
+      data.tasks[taskIndex].deadline = deadlineDate.toISOString();
+    }
   }
 
   writeTasks(data);
