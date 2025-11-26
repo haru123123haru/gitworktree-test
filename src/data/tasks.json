@@ -2,17 +2,22 @@
   "tasks": [
     {
       "id": 1,
-      "title": "Git worktreeを学ぶ",
-      "description": "並列開発の基本を理解する",
+      "title": "Git worktree���w��",
+      "description": "����J���̊�{�𗝉�����",
       "status": "in_progress",
-      "createdAt": "2025-01-01T00:00:00.000Z"
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "categoryIds": [
+        1,
+        2
+      ]
     },
     {
       "id": 2,
       "title": "ベースアプリケーションを作成",
       "description": "タスク管理アプリの基本機能を実装",
       "status": "completed",
-      "createdAt": "2025-01-01T00:00:00.000Z"
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "categoryIds": []
     }
   ],
   "nextId": 3
