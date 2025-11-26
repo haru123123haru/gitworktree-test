@@ -745,6 +745,247 @@ body {
 }
 
 /* ================================
+   categories styles
+   ================================ */
+
+/* Sidebar title row with add button */
+.sidebar-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.sidebar-title-row .sidebar-title {
+  margin-bottom: 0;
+}
+
+/* Add category button */
+.btn-icon-small {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--color-primary);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast);
+}
+
+.btn-icon-small:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* Category list items */
+.category-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.category-item:hover {
+  background-color: var(--color-hover);
+}
+
+.category-item.active {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.category-item.empty-state {
+  color: var(--color-text-light);
+  cursor: default;
+  font-style: italic;
+}
+
+.category-item.empty-state:hover {
+  background-color: transparent;
+}
+
+/* Category color indicator */
+.category-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+/* Category actions (edit/delete buttons) */
+.category-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.category-item:hover .category-actions {
+  opacity: 1;
+}
+
+.btn-icon-tiny {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--color-text-light);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-icon-tiny:hover {
+  background-color: var(--color-hover);
+  color: var(--color-text);
+}
+
+/* Category form */
+.category-form {
+  padding: 12px;
+  background-color: var(--color-background-alt);
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.category-form input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.category-form input[type="text"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+/* Color picker */
+.color-picker {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.color-option {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: var(--color-text);
+  transform: scale(1.1);
+}
+
+/* Category form actions */
+.category-form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+/* Category checkboxes in task forms */
+.category-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 30px;
+}
+
+.category-checkbox {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+}
+
+.category-checkbox input[type="checkbox"] {
+  /* Visible for debugging - will hide later */
+  position: relative !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 4px 0 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: none !important;
+}
+
+.category-checkbox .category-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: white;
+  transition: opacity var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  opacity: 0.5;
+}
+
+.category-checkbox input[type="checkbox"]:checked + .category-badge {
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.category-checkbox:hover .category-badge {
+  opacity: 0.8;
+}
+
+.no-categories {
+  color: var(--color-text-light);
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* Category badges on tasks */
+.task-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.category-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  color: white;
+  font-weight: 500;
+}
+
+/* ================================
    deadline styles
    ================================ */
 

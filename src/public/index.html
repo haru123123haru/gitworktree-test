@@ -66,13 +66,33 @@
             </ul>
           </div>
 
-          <!-- Categories section (for future feature/categories) -->
+          <!-- Categories section (categories) -->
           <div class="sidebar-section">
-            <h3 class="sidebar-title">Categories</h3>
+            <div class="sidebar-title-row">
+              <h3 class="sidebar-title">Categories</h3>
+              <button type="button" class="btn-icon-small" id="addCategoryBtn" title="Add Category">+</button>
+            </div>
             <ul class="category-list" id="categoryList">
-              <!-- Categories will be added here -->
-              <li class="category-item empty-state">No categories yet</li>
+              <!-- Categories will be rendered here by JavaScript -->
             </ul>
+            <!-- Category Form (hidden by default) -->
+            <div class="category-form" id="categoryForm" style="display: none;">
+              <input type="text" id="categoryName" placeholder="Category name" maxlength="50">
+              <div class="color-picker" id="colorPicker">
+                <button type="button" class="color-option" data-color="#e74c3c" style="background-color: #e74c3c;" title="Red"></button>
+                <button type="button" class="color-option" data-color="#e67e22" style="background-color: #e67e22;" title="Orange"></button>
+                <button type="button" class="color-option" data-color="#f1c40f" style="background-color: #f1c40f;" title="Yellow"></button>
+                <button type="button" class="color-option" data-color="#27ae60" style="background-color: #27ae60;" title="Green"></button>
+                <button type="button" class="color-option selected" data-color="#3498db" style="background-color: #3498db;" title="Blue"></button>
+                <button type="button" class="color-option" data-color="#9b59b6" style="background-color: #9b59b6;" title="Purple"></button>
+                <button type="button" class="color-option" data-color="#e91e63" style="background-color: #e91e63;" title="Pink"></button>
+                <button type="button" class="color-option" data-color="#95a5a6" style="background-color: #95a5a6;" title="Gray"></button>
+              </div>
+              <div class="category-form-actions">
+                <button type="button" class="btn btn-small btn-secondary" id="cancelCategoryBtn">Cancel</button>
+                <button type="button" class="btn btn-small btn-primary" id="saveCategoryBtn">Save</button>
+              </div>
+            </div>
           </div>
         </nav>
       </aside>
@@ -102,11 +122,11 @@
             </div>
             <div class="form-row form-actions">
               <div class="form-group form-group-category">
-                <!-- Category select (for future feature/categories) -->
-                <label for="category">Category</label>
-                <select id="category" name="category" disabled>
-                  <option value="">No category</option>
-                </select>
+                <!-- Category select (categories) -->
+                <label>Category</label>
+                <div class="category-checkboxes" id="categoryCheckboxes">
+                  <!-- Category checkboxes will be rendered here -->
+                </div>
               </div>
               <button type="submit" class="btn btn-primary">
                 <span class="btn-icon">+</span>
@@ -186,11 +206,11 @@
             </div>
           </div>
           <div class="form-group">
-            <!-- Category edit (for future feature/categories) -->
-            <label for="editCategory">Category</label>
-            <select id="editCategory" disabled>
-              <option value="">No category</option>
-            </select>
+            <!-- Category edit (categories) -->
+            <label>Category</label>
+            <div class="category-checkboxes" id="editCategoryCheckboxes">
+              <!-- Category checkboxes will be rendered here -->
+            </div>
           </div>
         </div>
         <div class="modal-footer">

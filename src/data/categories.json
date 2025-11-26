@@ -1,0 +1,23 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Work",
+      "color": "#3498db",
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "Personal",
+      "color": "#27ae60",
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "name": "test1",
+      "color": "#e91e63",
+      "createdAt": "2025-11-26T03:47:05.795Z"
+    }
+  ],
+  "nextId": 5
+}

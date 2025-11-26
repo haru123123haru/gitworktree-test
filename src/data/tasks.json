@@ -6,6 +6,7 @@
       "description": "並列開発の基本を理解する",
       "status": "in_progress",
       "createdAt": "2025-01-01T00:00:00.000Z",
+      "categoryIds": [1, 2],
       "deadline": null
     },
     {
@@ -14,6 +15,7 @@
       "description": "タスク管理アプリの基本機能を実装",
       "status": "completed",
       "createdAt": "2025-01-01T00:00:00.000Z",
+      "categoryIds": [],
       "deadline": null
     }
   ],
