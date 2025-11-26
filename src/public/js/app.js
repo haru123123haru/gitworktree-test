@@ -8,6 +8,9 @@ let allTasks = [];
 let currentFilter = 'all';
 let allCategories = [];
 let currentCategoryFilter = null;
+// deadline feature: Sort state
+let currentSort = 'createdAt';
+let currentSortOrder = 'asc';
 
 // DOM Elements
 const tasksContainer = document.getElementById('tasks');
@@ -37,6 +40,32 @@ function setupEventListeners() {
         const filter = filterItem.dataset.filter;
         setFilter(filter);
       }
+    });
+  }
+
+  // deadline feature: Sort event listeners
+  const sortBySelect = document.getElementById('sortBy');
+  const sortOrderBtn = document.getElementById('sortOrderBtn');
+  const clearDeadlineBtn = document.getElementById('clearDeadlineBtn');
+
+  if (sortBySelect) {
+    sortBySelect.addEventListener('change', (e) => {
+      currentSort = e.target.value;
+      loadTasks();
+    });
+  }
+
+  if (sortOrderBtn) {
+    sortOrderBtn.addEventListener('click', () => {
+      currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
+      updateSortOrderIcon();
+      loadTasks();
+    });
+  }
+
+  if (clearDeadlineBtn) {
+    clearDeadlineBtn.addEventListener('click', () => {
+      document.getElementById('editDeadline').value = '';
     });
   }
 }
@@ -86,7 +115,9 @@ function updateTaskCounts() {
 // Load all tasks
 async function loadTasks() {
   try {
-    const response = await fetch(API_URL);
+    // deadline feature: Add sort parameters
+    const url = `${API_URL}?sort=${currentSort}&order=${currentSortOrder}`;
+    const response = await fetch(url);
     const tasks = await response.json();
     allTasks = tasks;
     updateTaskCounts();
@@ -107,8 +138,13 @@ function renderTasks(tasks) {
     return;
   }
 
-  tasksContainer.innerHTML = tasks.map(task => `
-    <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" data-id="${task.id}">
+  tasksContainer.innerHTML = tasks.map(task => {
+    // deadline feature: Calculate deadline classes
+    const deadlineClass = getDeadlineClass(task);
+    const deadlineDisplay = formatDeadlineDisplay(task.deadline);
+
+    return `
+    <div class="task-item ${task.status === 'completed' ? 'completed' : ''} ${deadlineClass}" data-id="${task.id}">
       <div class="task-content">
         <div class="task-title">${escapeHtml(task.title)}</div>
         ${task.description ? `<div class="task-description">${escapeHtml(task.description)}</div>` : ''}
@@ -116,6 +152,7 @@ function renderTasks(tasks) {
         <div class="task-meta">
           <span class="task-status status-${task.status}">${formatStatus(task.status)}</span>
           <span>Created: ${formatDate(task.createdAt)}</span>
+          ${deadlineDisplay ? `<span class="task-deadline ${deadlineClass}">${deadlineDisplay}</span>` : ''}
         </div>
       </div>
       <div class="task-actions">
@@ -123,7 +160,8 @@ function renderTasks(tasks) {
         <button class="btn btn-danger btn-small" onclick="deleteTask(${task.id})">Delete</button>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 // Create task
@@ -133,12 +171,14 @@ async function handleCreateTask(e) {
   const title = document.getElementById('title').value;
   const description = document.getElementById('description').value;
   const categoryIds = getSelectedCategoryIds('categoryCheckboxes');
+  // deadline feature: Get deadline value
+  const deadline = document.getElementById('deadline').value || null;
 
   try {
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description, categoryIds })
+      body: JSON.stringify({ title, description, categoryIds, deadline })
     });
 
     if (!response.ok) {
@@ -169,6 +209,8 @@ async function openEditModal(id) {
   document.getElementById('editTitle').value = task.title;
   document.getElementById('editDescription').value = task.description;
   document.getElementById('editStatus').value = task.status;
+  // deadline feature: Set deadline value
+  document.getElementById('editDeadline').value = task.deadline ? task.deadline.split('T')[0] : '';
 
   // categories: Render and set category checkboxes
   renderCategoryCheckboxes('editCategoryCheckboxes', task.categoryIds || []);
@@ -190,12 +232,15 @@ async function handleEditTask(e) {
   const description = document.getElementById('editDescription').value;
   const status = document.getElementById('editStatus').value;
   const categoryIds = getSelectedCategoryIds('editCategoryCheckboxes');
+  // deadline feature: Get deadline value
+  const deadlineValue = document.getElementById('editDeadline').value;
+  const deadline = deadlineValue || null;
 
   try {
     const response = await fetch(`${API_URL}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description, status, categoryIds })
+      body: JSON.stringify({ title, description, status, categoryIds, deadline })
     });
 
     if (!response.ok) {
@@ -404,6 +449,143 @@ function setupCategoryEventListeners() {
     });
   }
 }
+
+// ================================
+// deadline functions
+// ================================
+
+// Check if deadline is overdue
+function isOverdue(deadline) {
+  if (!deadline) return false;
+  return new Date(deadline) < new Date();
+}
+
+// Check if deadline is due soon (within 24 hours)
+function isDueSoon(deadline) {
+  if (!deadline) return false;
+  const now = new Date();
+  const due = new Date(deadline);
+  const diff = due - now;
+  return diff > 0 && diff < 24 * 60 * 60 * 1000;
+}
+
+// Get deadline CSS class based on status
+function getDeadlineClass(task) {
+  if (task.status === 'completed' || !task.deadline) return '';
+  if (isOverdue(task.deadline)) return 'task-overdue';
+  if (isDueSoon(task.deadline)) return 'task-due-soon';
+  return '';
+}
+
+// Format deadline for display
+function formatDeadlineDisplay(deadline) {
+  if (!deadline) return null;
+
+  const now = new Date();
+  const due = new Date(deadline);
+  const diffMs = due - now;
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  const formattedDate = due.toLocaleDateString('ja-JP');
+
+  if (diffMs < 0) {
+    const overdueDays = Math.abs(diffDays);
+    return `Deadline: ${formattedDate} (${overdueDays}日超過)`;
+  } else if (diffDays === 0) {
+    return `Deadline: ${formattedDate} (今日)`;
+  } else if (diffDays === 1) {
+    return `Deadline: ${formattedDate} (明日)`;
+  } else if (diffDays <= 7) {
+    return `Deadline: ${formattedDate} (あと${diffDays}日)`;
+  }
+
+  return `Deadline: ${formattedDate}`;
+}
+
+// Update sort order icon
+function updateSortOrderIcon() {
+  const icon = document.getElementById('sortOrderIcon');
+  if (icon) {
+    icon.textContent = currentSortOrder === 'asc' ? '↑' : '↓';
+  }
+}
+
+// ================================
+// dark-mode functions
+// ================================
+
+const THEME_STORAGE_KEY = 'task-manager-theme';
+
+// Get the user's preferred theme
+function getPreferredTheme() {
+  // First check LocalStorage
+  const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  if (storedTheme) {
+    return storedTheme;
+  }
+
+  // Then check system preference
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+
+  // Default to light
+  return 'light';
+}
+
+// Apply theme to document
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+}
+
+// Save theme to LocalStorage
+function saveTheme(theme) {
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
+}
+
+// Toggle theme
+function toggleTheme() {
+  const currentTheme = document.documentElement.dataset.theme || 'light';
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+  applyTheme(newTheme);
+  saveTheme(newTheme);
+}
+
+// Initialize theme on page load
+function initTheme() {
+  // Apply theme immediately to prevent flash
+  const theme = getPreferredTheme();
+  applyTheme(theme);
+
+  // Listen for system theme changes
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      // Only auto-switch if user hasn't manually set a preference
+      if (!localStorage.getItem(THEME_STORAGE_KEY)) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  }
+}
+
+// Setup theme toggle button (called after DOM is ready)
+function setupThemeToggle() {
+  const themeToggleBtn = document.getElementById('themeToggleBtn');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleTheme);
+  }
+}
+
+// Initialize theme immediately (before DOMContentLoaded to prevent flash)
+initTheme();
+
+// Setup toggle button after DOM is ready
+document.addEventListener('DOMContentLoaded', setupThemeToggle);
+
+// ================================
+// categories form functions
+// ================================
 
 // Show category form
 function showCategoryForm() {

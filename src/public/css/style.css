@@ -1,5 +1,5 @@
 /* ================================
-   CSS Variables (for future dark mode)
+   CSS Variables - Light Mode (default)
    ================================ */
 :root {
   /* Colors */
@@ -40,6 +40,39 @@
   /* Transitions */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s ease;
+}
+
+/* ================================
+   CSS Variables - Dark Mode
+   ================================ */
+[data-theme="dark"] {
+  /* Colors - slightly brighter for dark mode */
+  --color-primary: #5dade2;
+  --color-primary-hover: #3498db;
+  --color-secondary: #7f8c8d;
+  --color-secondary-hover: #95a5a6;
+  --color-danger: #e74c3c;
+  --color-danger-hover: #c0392b;
+  --color-success: #2ecc71;
+  --color-warning: #f1c40f;
+
+  /* Background */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+
+  /* Text */
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --text-muted: #707070;
+
+  /* Border */
+  --border-color: #404040;
+
+  /* Shadows - more subtle in dark mode */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* ================================
@@ -950,4 +983,169 @@ body {
   font-size: 11px;
   color: white;
   font-weight: 500;
+}
+
+/* ================================
+   deadline styles
+   ================================ */
+
+/* Overdue task styling */
+.task-item.task-overdue {
+  border-left: 4px solid var(--color-danger);
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+.task-item.task-overdue:hover {
+  border-color: var(--color-danger);
+}
+
+/* Due soon task styling (within 24 hours) */
+.task-item.task-due-soon {
+  border-left: 4px solid var(--color-warning);
+  background-color: rgba(243, 156, 18, 0.05);
+}
+
+.task-item.task-due-soon:hover {
+  border-color: var(--color-warning);
+}
+
+/* Deadline display in task meta */
+.task-deadline {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.task-deadline.task-overdue {
+  background-color: var(--color-danger);
+  color: white;
+}
+
+.task-deadline.task-due-soon {
+  background-color: var(--color-warning);
+  color: white;
+}
+
+/* Sort order button */
+.sort-order-btn {
+  padding: 5px 10px;
+  min-width: 36px;
+}
+
+.sort-order-btn:hover {
+  transform: none;
+}
+
+/* Deadline input wrapper in modal */
+.deadline-input-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.deadline-input-wrapper input {
+  flex: 1;
+}
+
+.deadline-input-wrapper .btn {
+  flex-shrink: 0;
+}
+
+/* ================================
+   dark-mode styles
+   ================================ */
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  font-size: 1.2rem;
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--bg-tertiary);
+  transform: scale(1.05);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Theme icon visibility */
+.theme-icon-light,
+.theme-icon-dark {
+  display: none;
+}
+
+/* Light mode: show moon icon */
+:root .theme-icon-dark,
+[data-theme="light"] .theme-icon-dark {
+  display: inline;
+}
+
+/* Dark mode: show sun icon */
+[data-theme="dark"] .theme-icon-light {
+  display: inline;
+}
+
+[data-theme="dark"] .theme-icon-dark {
+  display: none;
+}
+
+/* Smooth theme transition */
+body,
+.header,
+.sidebar,
+.main-content,
+.footer,
+.task-form-section,
+.task-list-section,
+.task-item,
+.modal-content,
+.btn,
+.form-group input,
+.form-group textarea,
+.form-group select {
+  transition: background-color var(--transition-normal),
+              color var(--transition-normal),
+              border-color var(--transition-normal),
+              box-shadow var(--transition-normal);
+}
+
+/* Dark mode specific adjustments */
+[data-theme="dark"] .filter-item.active {
+  background-color: var(--color-primary);
+}
+
+[data-theme="dark"] .modal-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group textarea,
+[data-theme="dark"] .form-group select {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-group input:disabled,
+[data-theme="dark"] .form-group select:disabled {
+  background-color: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .sort-options select {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }

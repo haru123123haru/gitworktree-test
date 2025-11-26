@@ -20,9 +20,12 @@
         </div>
       </div>
       <div class="header-right">
-        <!-- Theme toggle (for future feature/dark-mode) -->
+        <!-- Theme toggle (dark-mode) -->
         <div class="theme-toggle" id="themeToggle">
-          <!-- Theme toggle button will be added here -->
+          <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle theme">
+            <span class="theme-icon-light">☀️</span>
+            <span class="theme-icon-dark">🌙</span>
+          </button>
         </div>
         <!-- User area (for future feature/user-auth) -->
         <div class="user-area" id="userArea">
@@ -108,9 +111,9 @@
                 <input type="text" id="title" name="title" maxlength="100" placeholder="Enter task title..." required>
               </div>
               <div class="form-group form-group-deadline">
-                <!-- Deadline input (for future feature/deadline) -->
+                <!-- deadline feature: Deadline input -->
                 <label for="deadline">Deadline</label>
-                <input type="date" id="deadline" name="deadline" disabled>
+                <input type="date" id="deadline" name="deadline">
               </div>
             </div>
             <div class="form-group">
@@ -138,14 +141,17 @@
           <div class="section-header">
             <h2>Tasks</h2>
             <div class="section-actions">
-              <!-- Sort options (for future feature/deadline) -->
+              <!-- deadline feature: Sort options -->
               <div class="sort-options" id="sortOptions">
                 <label for="sortBy">Sort by:</label>
-                <select id="sortBy" disabled>
+                <select id="sortBy">
                   <option value="createdAt">Created Date</option>
                   <option value="deadline">Deadline</option>
                   <option value="status">Status</option>
                 </select>
+                <button type="button" id="sortOrderBtn" class="btn btn-secondary btn-small sort-order-btn" title="Toggle sort order">
+                  <span id="sortOrderIcon">↑</span>
+                </button>
               </div>
             </div>
           </div>
@@ -191,9 +197,12 @@
               </select>
             </div>
             <div class="form-group">
-              <!-- Deadline edit (for future feature/deadline) -->
+              <!-- deadline feature: Deadline edit -->
               <label for="editDeadline">Deadline</label>
-              <input type="date" id="editDeadline" disabled>
+              <div class="deadline-input-wrapper">
+                <input type="date" id="editDeadline">
+                <button type="button" id="clearDeadlineBtn" class="btn btn-secondary btn-small">Clear</button>
+              </div>
             </div>
           </div>
           <div class="form-group">
